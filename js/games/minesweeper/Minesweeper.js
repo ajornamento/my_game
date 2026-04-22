@@ -50,20 +50,29 @@ export class Minesweeper extends BaseGame {
     this._lost         = false;
     this._lostMine     = null;
     this._nextDiff     = null;
-    this._touchMoved   = false;
-    this._longPressTimer = null;
+    // Touch state — reset each press
+    this._touchStartX      = 0;
+    this._touchStartY      = 0;
+    this._touchMoved       = false;
+    this._fingerDown       = false;
+    this._longPressDidFire = false;
+    this._longPressTimer   = null;
 
     this._setCanvasSize('easy');
     this._renderIdle();
 
-    this._addListener(this._canvas, 'click',         e => this._onClick(e));
-    this._addListener(this._canvas, 'contextmenu',   e => this._onRightClick(e));
-    this._addListener(window,       'keydown',        e => this._onKey(e));
-    this._addListener(this._canvas, 'virtual-input',  e => this._onVirtual(e));
+    // Desktop: click + right-click
+    this._addListener(this._canvas, 'click',        e => this._onClick(e));
+    this._addListener(this._canvas, 'contextmenu',  e => this._onRightClick(e));
+    this._addListener(window,       'keydown',       e => this._onKey(e));
+    this._addListener(this._canvas, 'virtual-input', e => this._onVirtual(e));
+    // Mobile: handle all interaction in touch events (passive:false so we can preventDefault)
     this._addListener(this._canvas, 'touchstart',
       e => this._onTouchStart(e), { passive: false });
-    this._addListener(this._canvas, 'touchend',  () => this._onTouchEnd());
-    this._addListener(this._canvas, 'touchmove', () => this._onTouchMove());
+    this._addListener(this._canvas, 'touchend',
+      e => this._onTouchEnd(e),   { passive: false });
+    this._addListener(this._canvas, 'touchmove',
+      e => this._onTouchMove(e),  { passive: false });
   }
 
   _onStart() {
@@ -172,18 +181,61 @@ export class Minesweeper extends BaseGame {
   }
 
   _onTouchStart(e) {
-    if (this._state !== 'running') return;
-    this._touchMoved = false;
+    // Always save coords immediately — touch objects are recycled by the browser
+    // and become stale inside async callbacks (setTimeout).
+    if (e.touches.length !== 1) return;
     const touch = e.touches[0];
+    this._touchStartX      = touch.clientX;
+    this._touchStartY      = touch.clientY;
+    this._touchMoved       = false;
+    this._fingerDown       = true;
+    this._longPressDidFire = false;
+
+    // Only intercept touch when the game is actively running.
+    // Idle/gameover taps fall through to the click handler normally.
+    if (this._state !== 'running' || this._won || this._lost) return;
+
+    // Suppress the synthetic click/mousedown that would otherwise fire ~300ms
+    // after touchend — we handle everything ourselves in touchend / setTimeout.
+    e.preventDefault();
+
+    const sx = this._touchStartX;  // local copy, immune to recycling
+    const sy = this._touchStartY;
+
     this._longPressTimer = setTimeout(() => {
-      if (!this._touchMoved && e.touches.length === 1) {
-        const cell = this._cellAt(touch.clientX, touch.clientY);
-        if (cell) this._toggleFlag(cell.col, cell.row);
+      // Check our own _fingerDown flag, not e.touches (live/stale collection)
+      if (!this._touchMoved && this._fingerDown) {
+        const cell = this._cellAt(sx, sy);
+        if (cell) {
+          this._toggleFlag(cell.col, cell.row);
+          this._longPressDidFire = true;
+          if (navigator.vibrate) navigator.vibrate(40);
+        }
       }
     }, 380);
   }
-  _onTouchEnd()  { clearTimeout(this._longPressTimer); }
-  _onTouchMove() { this._touchMoved = true; clearTimeout(this._longPressTimer); }
+
+  _onTouchEnd(e) {
+    e.preventDefault();
+    this._fingerDown = false;
+    clearTimeout(this._longPressTimer);
+
+    if (this._state !== 'running' || this._won || this._lost) return;
+    // Long press already handled — don't also reveal/flag on finger-up
+    if (this._touchMoved || this._longPressDidFire) return;
+
+    // Short tap: use the saved coords (touch objects are gone by now)
+    const cell = this._cellAt(this._touchStartX, this._touchStartY);
+    if (!cell) return;
+    if (this._flagMode) this._toggleFlag(cell.col, cell.row);
+    else                this._revealCell(cell.col, cell.row);
+  }
+
+  _onTouchMove(e) {
+    e.preventDefault();
+    this._touchMoved = true;
+    clearTimeout(this._longPressTimer);
+  }
 
   // ── Idle: difficulty selection ────────────────────────────────────────────
 
