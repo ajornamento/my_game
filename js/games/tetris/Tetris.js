@@ -488,21 +488,29 @@ export class Tetris extends BaseGame {
       this._drawMiniPiece(ctx, this._next[i], px, 136 + i * 90, 1);
     }
 
-    // ── LEVEL / LINES ──
-    const infoY = CANVAS_H - 90;
-    ctx.fillStyle = '#8888aa';
+    // ── BEST / LEVEL / LINES ──
+    const infoY = CANVAS_H - 130;
     ctx.font = '11px monospace';
-    ctx.fillText('LEVEL', px, infoY);
-    ctx.fillStyle = '#a29bfe';
-    ctx.font = 'bold 22px monospace';
-    ctx.fillText(this._level, px, infoY + 22);
+
+    ctx.fillStyle = '#8888aa';
+    ctx.fillText('BEST', px, infoY);
+    ctx.fillStyle = '#f0c040';
+    ctx.font = 'bold 18px monospace';
+    ctx.fillText(this.getHighScore().toLocaleString(), px, infoY + 20);
 
     ctx.fillStyle = '#8888aa';
     ctx.font = '11px monospace';
-    ctx.fillText('LINES', px, infoY + 48);
+    ctx.fillText('LEVEL', px, infoY + 44);
     ctx.fillStyle = '#a29bfe';
     ctx.font = 'bold 22px monospace';
-    ctx.fillText(this._lines, px, infoY + 70);
+    ctx.fillText(this._level, px, infoY + 66);
+
+    ctx.fillStyle = '#8888aa';
+    ctx.font = '11px monospace';
+    ctx.fillText('LINES', px, infoY + 90);
+    ctx.fillStyle = '#a29bfe';
+    ctx.font = 'bold 22px monospace';
+    ctx.fillText(this._lines, px, infoY + 112);
   }
 
   _drawMiniPiece(ctx, type, px, py, alpha) {

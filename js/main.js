@@ -3,6 +3,7 @@ import { resourceManager } from './core/ResourceManager.js';
 import { ScoreBoard }      from './ui/ScoreBoard.js';
 import { GameMenu }        from './ui/GameMenu.js';
 import { Controls }        from './ui/Controls.js';
+import { Records }         from './ui/Records.js';
 
 import { Tetris }      from './games/tetris/Tetris.js';
 import { Snake }       from './games/snake/Snake.js';
@@ -34,6 +35,7 @@ const GAMES = [
 new ScoreBoard(gameManager);
 new GameMenu(gameManager, GAMES);
 const controls = new Controls(gameManager);
+new Records(gameManager);
 
 // ── Virtual-pad layouts ────────────────────────────────────────────────────
 controls.registerPad('tetris', [
@@ -62,13 +64,9 @@ const savedTheme = localStorage.getItem('mgame_settings_theme') ?? 'dark';
 document.documentElement.dataset.theme = savedTheme;
 
 // ── Canvas resize helper ───────────────────────────────────────────────────
-// Games set their own canvas dimensions in _onInit; main.js only sets a
-// default size for the idle/placeholder state.
 function resizeCanvas() {
-  const game = gameManager.getCurrentGame();
-  if (game) return; // active game owns canvas dimensions
-  const area = canvas.parentElement;
-  const size = Math.min(area.clientWidth - 32, area.clientHeight - 32, 560);
+  const area  = canvas.parentElement;
+  const size  = Math.min(area.clientWidth - 32, area.clientHeight - 32, 560);
   canvas.width  = size;
   canvas.height = size;
 }

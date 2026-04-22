@@ -231,8 +231,8 @@ body {
   font-size: 1.4rem;
   cursor: pointer;
   touch-action: manipulation;
-  user-select: none;
   -webkit-user-select: none;
+  user-select: none;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -256,11 +256,7 @@ body {
   padding: 8px 0;
 }
 
-/* D-pad layout helpers */
-.vpad-btn--up    { order: 1; }
-.vpad-btn--left  { order: 2; }
-.vpad-btn--down  { order: 3; }
-.vpad-btn--right { order: 4; }
+/* Button order follows registerPad() registration order in main.js */
 
 /* ── Game-over overlay ── */
 .overlay {
@@ -302,6 +298,127 @@ body {
   .header__title { font-size: 1rem; }
   .header__actions .btn span { display: none; }
 }
+
+/* ── Records Modal ── */
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.6);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.modal.is-open { display: flex; }
+
+.modal__box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  width: 100%;
+  max-width: 420px;
+  max-height: 90dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+.modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.modal__title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--accent2);
+}
+
+.modal__close {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: var(--transition);
+}
+.modal__close:hover { background: var(--surface2); color: var(--text); }
+
+/* ── Records tabs ── */
+.records-tabs {
+  display: flex;
+  gap: 6px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+  flex-shrink: 0;
+}
+
+.records-tab {
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface2);
+  color: var(--text-muted);
+  font-size: .8rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: var(--transition);
+}
+.records-tab:hover   { border-color: var(--accent); color: var(--text); }
+.records-tab.is-active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+/* ── Records table ── */
+.records-table-wrap {
+  overflow-y: auto;
+  flex: 1;
+  padding: 8px 0;
+}
+
+.records-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .88rem;
+}
+
+.records-table th {
+  padding: 8px 16px;
+  text-align: left;
+  color: var(--text-muted);
+  font-size: .72rem;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  border-bottom: 1px solid var(--border);
+}
+
+.records-table td {
+  padding: 10px 16px;
+  border-bottom: 1px solid rgba(255,255,255,.04);
+}
+
+.records-table tr.is-best td { color: var(--accent2); }
+
+.records-rank  { width: 40px; font-size: 1.1rem; }
+.records-score { font-weight: 700; font-variant-numeric: tabular-nums; }
+.records-date  { color: var(--text-muted); font-size: .82rem; }
+.records-time  { display: block; font-size: .75rem; opacity: .7; }
+
+.records-empty {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 32px 16px;
+  font-size: .9rem;
+}
+.records-empty.is-hidden { display: none; }
 
 /* ── Scrollbar styling ── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }

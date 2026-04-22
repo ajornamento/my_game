@@ -119,6 +119,24 @@ export class ResourceManager {
     if (score > this.getHighScore(gameId)) {
       localStorage.setItem(`mgame_hs_${gameId}`, String(score));
     }
+    // Always record to top-10 list (score > 0 only)
+    if (score > 0) this._pushTopScore(gameId, score);
+  }
+
+  /** @returns {Array<{score:number, date:string}>} sorted desc, max 10 */
+  getTopScores(gameId) {
+    try {
+      const raw = localStorage.getItem(`mgame_top_${gameId}`);
+      return raw ? JSON.parse(raw) : [];
+    } catch { return []; }
+  }
+
+  _pushTopScore(gameId, score) {
+    const list = this.getTopScores(gameId);
+    list.push({ score, date: new Date().toISOString() });
+    list.sort((a, b) => b.score - a.score);
+    list.splice(10);
+    localStorage.setItem(`mgame_top_${gameId}`, JSON.stringify(list));
   }
 
   getLastGame() {

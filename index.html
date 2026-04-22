@@ -2,7 +2,7 @@
 <html lang="ko" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Multi-Game Suite</title>
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -12,9 +12,10 @@
   <header class="header">
     <span class="header__title">🕹️ Multi-Game Suite</span>
     <div class="header__actions">
-      <button id="btn-theme" class="btn"><span>🌙</span> Dark</button>
-      <button id="btn-bgm"   class="btn"><span>🎵</span> BGM</button>
-      <button id="btn-sfx"   class="btn"><span>🔊</span> SFX</button>
+      <button id="btn-records" class="btn"><span>🏆</span> Records</button>
+      <button id="btn-theme"   class="btn"><span>🌙</span> Dark</button>
+      <button id="btn-bgm"     class="btn"><span>🎵</span> BGM</button>
+      <button id="btn-sfx"     class="btn"><span>🔊</span> SFX</button>
     </div>
   </header>
 
@@ -66,6 +67,30 @@
 
   <!-- ── Virtual Controls (mobile) ── -->
   <div id="virtual-controls" aria-label="가상 조이스틱"></div>
+
+  <!-- ── Records Modal ── -->
+  <div id="records-modal" class="modal" role="dialog" aria-modal="true" aria-label="최고기록">
+    <div class="modal__box">
+      <div class="modal__header">
+        <span class="modal__title">🏆 최고기록</span>
+        <button id="records-close" type="button" class="modal__close" aria-label="닫기">✕</button>
+      </div>
+      <div id="records-tabs" class="records-tabs"></div>
+      <div class="records-table-wrap">
+        <table class="records-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Score</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody id="records-tbody"></tbody>
+        </table>
+        <p id="records-empty" class="records-empty is-hidden">아직 기록이 없습니다.</p>
+      </div>
+    </div>
+  </div>
 
   <script type="module" src="js/main.js"></script>
 </body>
