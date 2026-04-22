@@ -258,6 +258,22 @@ body {
 
 /* Button order follows registerPad() registration order in main.js */
 
+/* ── Snake D-pad ── */
+.virtual-pad--snake {
+  display: grid;
+  grid-template-areas:
+    ". up ."
+    "left . right"
+    ". down .";
+  grid-template-columns: repeat(3, 60px);
+  grid-template-rows:    repeat(3, 60px);
+  gap: 4px;
+}
+.virtual-pad--snake .vpad-btn:nth-child(1) { grid-area: up; }
+.virtual-pad--snake .vpad-btn:nth-child(2) { grid-area: left; }
+.virtual-pad--snake .vpad-btn:nth-child(3) { grid-area: down; }
+.virtual-pad--snake .vpad-btn:nth-child(4) { grid-area: right; }
+
 /* ── Game-over overlay ── */
 .overlay {
   position: absolute;
