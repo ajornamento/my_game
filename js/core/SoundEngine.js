@@ -109,6 +109,11 @@ class SoundEngine {
       // ── Snake SFX ──
       case 'snakeEat':  this._snakeEat(t); break;
       case 'snakeDie':  this._snakeDie(t); break;
+      // ── Minesweeper SFX ──
+      case 'mineReveal':    this._mineReveal(t); break;
+      case 'mineFlag':      this._mineFlag(t); break;
+      case 'mineExplosion': this._mineExplosion(t); break;
+      case 'mineWin':       this._mineWin(t); break;
     }
   }
 
@@ -233,6 +238,30 @@ class SoundEngine {
     this._sweep(t,      F.A4, F.E4, 0.12, 'square',   0.30);
     this._sweep(t+0.10, F.E4, F.C4, 0.15, 'square',   0.25);
     this._sweep(t+0.22, F.C4, F.B3, 0.20, 'sawtooth', 0.20);
+  }
+
+  // ── Minesweeper SFX ──────────────────────────────────────────────────────
+
+  _mineReveal(t) {
+    this._blip(t, 480, 0.035, 'sine', 0.10);
+  }
+
+  _mineFlag(t) {
+    this._sweep(t, 700, 900, 0.055, 'square', 0.09);
+  }
+
+  _mineExplosion(t) {
+    this._sweep(t,      220, 55,  0.35, 'sawtooth', 0.50);
+    this._sweep(t,      440, 110, 0.20, 'square',   0.30);
+    this._blip(t,        80, 0.40, 'sine',           0.45);
+    this._blip(t+0.05, 1200, 0.08, 'square',         0.20);
+  }
+
+  _mineWin(t) {
+    [F.C5, F.E5, F.G5, F.C6].forEach((freq, i) => {
+      this._blip(t + i * 0.09, freq, 0.16, 'triangle', 0.22);
+    });
+    this._sweep(t + 0.38, F.C6, F.G5, 0.28, 'triangle', 0.16);
   }
 }
 

@@ -56,6 +56,10 @@ controls.registerPad('snake', [
   { label: 'Right', icon: '▶', action: 'ArrowRight', classes: 'vpad-btn--right' },
 ]);
 
+controls.registerPad('minesweeper', [
+  { label: 'Flag', icon: '🚩', action: 'flag' },
+]);
+
 controls.registerPad('breakout', [
   { label: 'Left',  icon: '◀', action: 'ArrowLeft',  classes: 'vpad-btn--left'  },
   { label: 'Right', icon: '▶', action: 'ArrowRight', classes: 'vpad-btn--right' },
