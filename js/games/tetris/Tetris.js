@@ -488,15 +488,22 @@ export class Tetris extends BaseGame {
       this._drawMiniPiece(ctx, this._next[i], px, 136 + i * 90, 1);
     }
 
-    // ── BEST / LEVEL / LINES ──
-    const infoY = CANVAS_H - 130;
+    // ── SCORE / BEST / LEVEL / LINES ──
+    const infoY = CANVAS_H - 172;
     ctx.font = '11px monospace';
 
     ctx.fillStyle = '#8888aa';
-    ctx.fillText('BEST', px, infoY);
+    ctx.fillText('SCORE', px, infoY);
+    ctx.fillStyle = '#e2e2f0';
+    ctx.font = 'bold 18px monospace';
+    ctx.fillText(this._score.toLocaleString(), px, infoY + 20);
+
+    ctx.fillStyle = '#8888aa';
+    ctx.font = '11px monospace';
+    ctx.fillText('BEST', px, infoY + 42);
     ctx.fillStyle = '#f0c040';
     ctx.font = 'bold 18px monospace';
-    ctx.fillText(this.getHighScore().toLocaleString(), px, infoY + 20);
+    ctx.fillText(this.getHighScore().toLocaleString(), px, infoY + 62);
 
     ctx.fillStyle = '#8888aa';
     ctx.font = '11px monospace';
