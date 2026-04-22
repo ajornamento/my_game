@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Multi-Game Suite</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ── Header ── -->
+  <header class="header">
+    <span class="header__title">🕹️ Multi-Game Suite</span>
+    <div class="header__actions">
+      <button id="btn-theme" class="btn"><span>🌙</span> Dark</button>
+      <button id="btn-bgm"   class="btn"><span>🎵</span> BGM</button>
+      <button id="btn-sfx"   class="btn"><span>🔊</span> SFX</button>
+    </div>
+  </header>
+
+  <!-- ── Game Selection Menu ── -->
+  <nav id="game-menu" role="tablist" aria-label="게임 선택"></nav>
+
+  <!-- ── Main Area ── -->
+  <main class="main">
+
+    <!-- Canvas -->
+    <section class="canvas-area" aria-label="게임 화면">
+      <canvas id="game-canvas" width="480" height="480" aria-label="게임 캔버스"></canvas>
+    </section>
+
+    <!-- Side Panel (desktop only) -->
+    <aside class="side-panel" aria-label="게임 정보">
+
+      <!-- Score -->
+      <div class="panel-card" id="score-board">
+        <div class="panel-card__title">Score</div>
+        <div class="score-board__value" id="score-current">0</div>
+        <div class="score-board__high">Best: <strong id="score-high">0</strong></div>
+      </div>
+
+      <!-- Controls -->
+      <div class="panel-card">
+        <div class="panel-card__title">Controls</div>
+        <div class="controls-group">
+          <button id="btn-start" class="btn btn--primary btn--full">▶ Start</button>
+          <button id="btn-pause" class="btn btn--full" disabled>⏸ Pause</button>
+          <button id="btn-stop"  class="btn btn--full" disabled>⏹ Stop</button>
+        </div>
+      </div>
+
+      <!-- Keyboard hints -->
+      <div class="panel-card">
+        <div class="panel-card__title">Keyboard</div>
+        <small style="color:var(--text-muted);line-height:1.6;">
+          Arrow keys — move<br>
+          Space — hard drop<br>
+          C — hold piece<br>
+          P — pause/resume<br>
+          R — restart
+        </small>
+      </div>
+
+    </aside>
+  </main>
+
+  <!-- ── Virtual Controls (mobile) ── -->
+  <div id="virtual-controls" aria-label="가상 조이스틱"></div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
