@@ -215,8 +215,7 @@ export class Minesweeper extends BaseGame {
     }, 380);
   }
 
-  _onTouchEnd(e) {
-    e.preventDefault();
+  _onTouchEnd() {
     this._fingerDown = false;
     clearTimeout(this._longPressTimer);
 
@@ -233,8 +232,16 @@ export class Minesweeper extends BaseGame {
 
   _onTouchMove(e) {
     e.preventDefault();
-    this._touchMoved = true;
-    clearTimeout(this._longPressTimer);
+    if (!e.touches.length) return;
+    const touch = e.touches[0];
+    const dx = touch.clientX - this._touchStartX;
+    const dy = touch.clientY - this._touchStartY;
+    // Ignore sub-10px drift — mobile fingers are never perfectly still and
+    // touchmove fires for every pixel, which would block every tap otherwise.
+    if (dx * dx + dy * dy > 100) {
+      this._touchMoved = true;
+      clearTimeout(this._longPressTimer);
+    }
   }
 
   // ── Idle: difficulty selection ────────────────────────────────────────────
