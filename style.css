@@ -29,13 +29,15 @@
 
 /* ── Reset ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { height: 100%; }
+html { height: 100%; }
 body {
   font-family: 'Segoe UI', system-ui, sans-serif;
   background: var(--bg);
   color: var(--text);
   display: flex;
   flex-direction: column;
+  /* dvh accounts for mobile browser chrome (address bar, nav bar) */
+  height: 100dvh;
   overflow: hidden;
 }
 
@@ -104,6 +106,7 @@ body {
 .main {
   display: flex;
   flex: 1;
+  min-height: 0;   /* allow flex children to shrink below content size */
   overflow: hidden;
   gap: 0;
 }
@@ -111,11 +114,13 @@ body {
 /* ── Canvas Area ── */
 .canvas-area {
   flex: 1;
+  min-width: 0;
+  min-height: 0;   /* critical: lets the area shrink inside flex column */
   display: flex;
   align-items: center;
   justify-content: center;
   background: var(--bg);
-  min-width: 0;
+  overflow: hidden;
 }
 
 #game-canvas {
@@ -124,10 +129,8 @@ body {
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   background: #000;
-  /* scale down to fit container while keeping aspect ratio */
   max-width: 100%;
-  max-height: calc(100vh - 130px);
-  object-fit: contain;
+  max-height: 100%;  /* fill canvas-area, never overflow */
 }
 
 /* ── Side Panel ── */
@@ -280,15 +283,17 @@ body {
 /* ── Responsive — mobile ── */
 @media (max-width: 680px) {
   .side-panel { display: none; }
-  #virtual-controls { display: block; }
+  #virtual-controls { display: block; flex-shrink: 0; }
 
   .main { flex-direction: column; }
-  .canvas-area { flex: 1; }
+  .canvas-area { flex: 1; min-height: 0; }
 
   #game-canvas {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
+    /* let canvas fill available height, not overflow into virtual controls */
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
     border-radius: 0;
     border-left: none;
     border-right: none;
