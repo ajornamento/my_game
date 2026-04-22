@@ -368,6 +368,13 @@ export class Tetris extends BaseGame {
 
   _lockPiece() {
     const { shape, x, y, type } = this._current;
+
+    // Snapshot BEFORE writing to board — this is what undo restores
+    const boardSnapshot = cloneBoard(this._board);
+    const scoreSnapshot = this._score;
+    const linesSnapshot = this._lines;
+    const levelSnapshot = this._level;
+
     for (let r = 0; r < shape.length; r++) {
       for (let c = 0; c < shape[r].length; c++) {
         if (!shape[r][c]) continue;
@@ -387,17 +394,15 @@ export class Tetris extends BaseGame {
     const nextType = this._next.shift();
     this._next.push(this._drawBag());
 
-    // Save undo state: board after lock/clear + new piece at spawn position
-    // Restoring this gives the player the locked piece back at spawn
     this._undoState = {
-      boardBefore: cloneBoard(this._board),   // board after clearing lines
-      lockedType:  type,                       // piece that was just locked
-      next:        [...this._next],            // next queue after drawing
+      boardBefore: boardSnapshot,   // board WITHOUT the locked piece
+      lockedType:  type,
+      next:        [...this._next],
       held:        this._held,
       canHold:     true,
-      score:       this._score,
-      lines:       this._lines,
-      level:       this._level,
+      score:       scoreSnapshot,
+      lines:       linesSnapshot,
+      level:       levelSnapshot,
     };
 
     this._current = this._spawnPiece(nextType);
