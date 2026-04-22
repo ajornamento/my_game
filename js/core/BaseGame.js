@@ -76,13 +76,21 @@ export class BaseGame {
   getScore() { return this._score; }
 
   getHighScore() {
-    const val = localStorage.getItem(`hs_${this.id}`);
+    // Migrate legacy key (hs_<id>) to unified key (mgame_hs_<id>) on first read
+    const legacy = localStorage.getItem(`hs_${this.id}`);
+    if (legacy !== null) {
+      const val = parseInt(legacy, 10);
+      const cur = parseInt(localStorage.getItem(`mgame_hs_${this.id}`) ?? '0', 10);
+      if (val > cur) localStorage.setItem(`mgame_hs_${this.id}`, String(val));
+      localStorage.removeItem(`hs_${this.id}`);
+    }
+    const val = localStorage.getItem(`mgame_hs_${this.id}`);
     return val !== null ? parseInt(val, 10) : 0;
   }
 
   saveHighScore() {
     if (this._score > this.getHighScore()) {
-      localStorage.setItem(`hs_${this.id}`, String(this._score));
+      localStorage.setItem(`mgame_hs_${this.id}`, String(this._score));
     }
   }
 

@@ -127,7 +127,13 @@ export class ResourceManager {
   getTopScores(gameId) {
     try {
       const raw = localStorage.getItem(`mgame_top_${gameId}`);
-      return raw ? JSON.parse(raw) : [];
+      const list = raw ? JSON.parse(raw) : [];
+      // Back-fill: if mgame_hs exists but top list is empty, add it as a seed entry
+      if (list.length === 0) {
+        const hs = this.getHighScore(gameId);
+        if (hs > 0) list.push({ score: hs, date: new Date(0).toISOString() });
+      }
+      return list;
     } catch { return []; }
   }
 
