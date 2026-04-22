@@ -45,6 +45,7 @@ controls.registerPad('tetris', [
   { label: 'Soft drop', icon: '▼',  action: 'ArrowDown',  classes: 'vpad-btn--down'  },
   { label: 'Hard drop', icon: '⏬', action: ' '                                       },
   { label: 'Hold',      icon: '📦', action: 'c'                                       },
+  { label: 'Undo',      icon: '↩',  action: 'u'                                       },
 ]);
 
 controls.registerPad('snake', [

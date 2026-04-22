@@ -244,6 +244,7 @@ export class Tetris extends BaseGame {
       case 'ArrowUp':    this._rotate(1);  break;
       case ' ':          this._hardDrop(); break;
       case 'c':          this._holdPiece(); break;
+      case 'u': case 'U': this._undo(); break;
     }
   }
 
@@ -311,10 +312,21 @@ export class Tetris extends BaseGame {
 
   _undo() {
     if (!this._undoState) return;
-    this._board   = cloneBoard(this._undoState.board);
-    this._current = { ...this._undoState.piece };
-    this._canHold = true;
+    const s = this._undoState;
+
+    // Remove locked piece rows by restoring board snapshot, then put piece back
+    this._board   = cloneBoard(s.boardBefore);
+    this._current = this._spawnPiece(s.lockedType);  // 등장 순간으로 복원
+    this._next    = [...s.next];
+    this._held    = s.held;
+    this._canHold = s.canHold;
+    this._score   = s.score;
+    this._lines   = s.lines;
+    this._level   = s.level;
+    this._dropAcc = 0;
     this._undoState = null;
+
+    this._emit('scoreUpdate', this._score);
   }
 
   // ── Piece mechanics ───────────────────────────────────────────────────────
@@ -355,12 +367,6 @@ export class Tetris extends BaseGame {
   }
 
   _lockPiece() {
-    // Save state for undo BEFORE locking
-    this._undoState = {
-      board: cloneBoard(this._board),
-      piece: { ...this._current },
-    };
-
     const { shape, x, y, type } = this._current;
     for (let r = 0; r < shape.length; r++) {
       for (let c = 0; c < shape[r].length; c++) {
@@ -380,6 +386,20 @@ export class Tetris extends BaseGame {
 
     const nextType = this._next.shift();
     this._next.push(this._drawBag());
+
+    // Save undo state: board after lock/clear + new piece at spawn position
+    // Restoring this gives the player the locked piece back at spawn
+    this._undoState = {
+      boardBefore: cloneBoard(this._board),   // board after clearing lines
+      lockedType:  type,                       // piece that was just locked
+      next:        [...this._next],            // next queue after drawing
+      held:        this._held,
+      canHold:     true,
+      score:       this._score,
+      lines:       this._lines,
+      level:       this._level,
+    };
+
     this._current = this._spawnPiece(nextType);
     this._canHold = true;
     this._dropAcc = 0;
