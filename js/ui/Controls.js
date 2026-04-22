@@ -148,19 +148,20 @@ export class Controls {
   }
 
   _toggleSfx() {
-    const { resourceManager } = window.__mgame ?? {};
-    if (!resourceManager) return;
-    const next = !resourceManager._sfxEnabled;
-    resourceManager.setSfxEnabled(next);
+    const { soundEngine } = window.__mgame ?? {};
+    if (!soundEngine) return;
+    const next = !soundEngine.sfxEnabled;
+    soundEngine.setSfxEnabled(next);
     const btn = document.getElementById('btn-sfx');
     if (btn) btn.textContent = next ? '🔊 SFX' : '🔇 SFX';
   }
 
   _toggleBgm() {
-    const { resourceManager } = window.__mgame ?? {};
-    if (!resourceManager) return;
-    const next = !resourceManager._bgmEnabled;
-    resourceManager.setBgmEnabled(next);
+    const { soundEngine } = window.__mgame ?? {};
+    if (!soundEngine) return;
+    const next = !soundEngine.bgmEnabled;
+    soundEngine.setBgmEnabled(next);
+    if (next) soundEngine.startBgm();
     const btn = document.getElementById('btn-bgm');
     if (btn) btn.textContent = next ? '🎵 BGM' : '🔕 BGM';
   }

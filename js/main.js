@@ -4,6 +4,7 @@ import { ScoreBoard }      from './ui/ScoreBoard.js';
 import { GameMenu }        from './ui/GameMenu.js';
 import { Controls }        from './ui/Controls.js';
 import { Records }         from './ui/Records.js';
+import { soundEngine }     from './core/SoundEngine.js';
 
 import { Tetris }      from './games/tetris/Tetris.js';
 import { Snake }       from './games/snake/Snake.js';
@@ -11,7 +12,7 @@ import { Minesweeper } from './games/minesweeper/Minesweeper.js';
 import { Breakout }    from './games/breakout/Breakout.js';
 
 // ── Expose singletons for Controls toggle helpers ──────────────────────────
-window.__mgame = { gameManager, resourceManager };
+window.__mgame = { gameManager, resourceManager, soundEngine };
 
 // ── Canvas setup ───────────────────────────────────────────────────────────
 const canvas = document.getElementById('game-canvas');

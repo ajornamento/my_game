@@ -1,4 +1,5 @@
-import { BaseGame } from '../../core/BaseGame.js';
+import { BaseGame }    from '../../core/BaseGame.js';
+import { soundEngine } from '../../core/SoundEngine.js';
 
 // ── Constants ────────────────────────────────────────────────────────────────
 const COLS        = 10;
@@ -136,17 +137,22 @@ export class Tetris extends BaseGame {
 
   _onStart() {
     this._lastTs = null;
+    soundEngine.resume();
+    soundEngine.startBgm();
   }
 
   _onPause() {
+    soundEngine.stopBgm();
     this._drawPauseOverlay();
   }
 
   _onResume() {
     this._lastTs = null;
+    soundEngine.startBgm();
   }
 
   _onStop() {
+    soundEngine.stopBgm();
     this._board   = Array.from({ length: ROWS }, () => Array(COLS).fill(null));
     this._score   = 0;
     this._level   = 1;
@@ -163,6 +169,7 @@ export class Tetris extends BaseGame {
   }
 
   _onDestroy() {
+    soundEngine.stopBgm();
     this._canvas.width  = 480;
     this._canvas.height = 480;
   }
@@ -252,7 +259,7 @@ export class Tetris extends BaseGame {
 
   _move(dx) {
     const p = { ...this._current, x: this._current.x + dx };
-    if (this._valid(p)) { this._current = p; return true; }
+    if (this._valid(p)) { this._current = p; soundEngine.play('move'); return true; }
     return false;
   }
 
@@ -263,14 +270,11 @@ export class Tetris extends BaseGame {
     const kicks = p.type === 'I' ? KICKS_I[key] : KICKS_JLSTZ[key];
     const rotated = { ...p, rotation: rot, shape: SHAPES[p.type][rot] };
 
-    // Try base position first
-    if (this._valid(rotated)) { this._current = rotated; return; }
-
-    // Try SRS wall kicks
+    if (this._valid(rotated)) { this._current = rotated; soundEngine.play('rotate'); return; }
     if (kicks) {
       for (const [dx, dy] of kicks) {
         const kicked = { ...rotated, x: rotated.x + dx, y: rotated.y + dy };
-        if (this._valid(kicked)) { this._current = kicked; return; }
+        if (this._valid(kicked)) { this._current = kicked; soundEngine.play('rotate'); return; }
       }
     }
   }
@@ -279,7 +283,7 @@ export class Tetris extends BaseGame {
     const p = { ...this._current, y: this._current.y + 1 };
     if (this._valid(p)) {
       this._current = p;
-      if (userInitiated) this._updateScore(1);
+      if (userInitiated) { this._updateScore(1); soundEngine.play('softDrop'); }
     } else {
       this._lockPiece();
     }
@@ -294,6 +298,7 @@ export class Tetris extends BaseGame {
       dropped++;
     }
     this._updateScore(dropped * 2);
+    soundEngine.play('hardDrop');
     this._lockPiece();
   }
 
@@ -308,15 +313,15 @@ export class Tetris extends BaseGame {
     }
     this._held    = type;
     this._canHold = false;
+    soundEngine.play('hold');
   }
 
   _undo() {
     if (!this._undoState) return;
     const s = this._undoState;
 
-    // Remove locked piece rows by restoring board snapshot, then put piece back
     this._board   = cloneBoard(s.boardBefore);
-    this._current = this._spawnPiece(s.lockedType);  // 등장 순간으로 복원
+    this._current = this._spawnPiece(s.lockedType);
     this._next    = [...s.next];
     this._held    = s.held;
     this._canHold = s.canHold;
@@ -325,6 +330,7 @@ export class Tetris extends BaseGame {
     this._level   = s.level;
     this._dropAcc = 0;
     this._undoState = null;
+    soundEngine.play('undo');
 
     this._emit('scoreUpdate', this._score);
   }
@@ -379,16 +385,18 @@ export class Tetris extends BaseGame {
       for (let c = 0; c < shape[r].length; c++) {
         if (!shape[r][c]) continue;
         const row = y + r;
-        if (row < 0) { this._triggerGameOver(); return; }
+        if (row < 0) { soundEngine.play('gameOver'); soundEngine.stopBgm(); this._triggerGameOver(); return; }
         this._board[row][x + c] = COLORS[type];
       }
     }
 
+    soundEngine.play('lock');
     const cleared = this._clearLines();
     if (cleared > 0) {
       this._updateScore(LINE_PTS[cleared] * this._level);
       this._lines += cleared;
       this._level = Math.floor(this._lines / 10) + 1;
+      soundEngine.play(cleared === 4 ? 'tetris' : 'lineClear', { lines: cleared });
     }
 
     const nextType = this._next.shift();
@@ -409,7 +417,7 @@ export class Tetris extends BaseGame {
     this._canHold = true;
     this._dropAcc = 0;
 
-    if (!this._valid(this._current)) this._triggerGameOver();
+    if (!this._valid(this._current)) { soundEngine.play('gameOver'); soundEngine.stopBgm(); this._triggerGameOver(); }
   }
 
   _clearLines() {
